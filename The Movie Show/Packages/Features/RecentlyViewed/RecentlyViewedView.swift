@@ -35,11 +35,7 @@ struct RecentlyViewedView: View {
                 }
             }
         }
-        .confirmationDialog(
-            "Clear History",
-            isPresented: $showClearConfirmation,
-            titleVisibility: .visible
-        ) {
+        .alert("Clear History", isPresented: $showClearConfirmation) {
             Button("Clear All", role: .destructive) {
                 Task { await viewModel.clearAll() }
             }
