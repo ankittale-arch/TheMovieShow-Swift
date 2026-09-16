@@ -42,14 +42,20 @@ final class RecentlyViewedCoordinator: RecentlyViewedCoordinatorProtocol {
 
 struct RecentlyViewedCoordinatorView: View {
     @State var coordinator: RecentlyViewedCoordinator
+    @State private var viewModel: RecentlyViewedViewModel
 
     init(coordinator: RecentlyViewedCoordinator) {
+        let vm = RecentlyViewedViewModel(
+            coordinator: coordinator,
+            recentlyViewedRepository: coordinator.recentlyViewedRepository
+        )
         _coordinator = State(wrappedValue: coordinator)
+        _viewModel = State(wrappedValue: vm)
     }
 
     var body: some View {
         NavigationStack(path: $coordinator.path) {
-            RecentlyViewedView(coordinator: coordinator)
+            RecentlyViewedView(viewModel: viewModel)
                 .navigationDestination(for: RecentlyViewedRoute.self) { route in
                     switch route {
                     case .movieDetail(let id):

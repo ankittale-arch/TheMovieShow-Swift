@@ -66,6 +66,7 @@ struct RecentlyViewedView: View {
             }
         }
         .listStyle(.plain)
+        .refreshable { await viewModel.loadHistory() }
     }
 }
 

@@ -8,6 +8,8 @@ struct EmptyStateView: View {
     let actionTitle: String?
     let action: (() -> Void)?
 
+    @State private var isPulsing = false
+
     init(
         title: String,
         message: String,
@@ -27,6 +29,9 @@ struct EmptyStateView: View {
             Image(systemName: systemImageName)
                 .font(.system(size: 64))
                 .foregroundStyle(Color.App.secondaryText)
+                .scaleEffect(isPulsing ? 1.08 : 0.92)
+                .animation(.easeInOut(duration: 1.8).repeatForever(autoreverses: true), value: isPulsing)
+                .onAppear { isPulsing = true }
                 .accessibilityHidden(true)
 
             VStack(spacing: Spacing.xSmall) {

@@ -44,6 +44,7 @@ struct BookmarksView: View {
             .onDelete { offsets in viewModel.removeBookmark(at: offsets) }
         }
         .listStyle(.plain)
+        .refreshable { await viewModel.loadBookmarks() }
     }
 }
 

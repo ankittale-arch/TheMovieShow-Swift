@@ -42,14 +42,20 @@ final class BookmarksCoordinator: BookmarksCoordinatorProtocol {
 
 struct BookmarksCoordinatorView: View {
     @State var coordinator: BookmarksCoordinator
+    @State private var viewModel: BookmarksViewModel
 
     init(coordinator: BookmarksCoordinator) {
+        let vm = BookmarksViewModel(
+            coordinator: coordinator,
+            bookmarkRepository: coordinator.bookmarkRepository
+        )
         _coordinator = State(wrappedValue: coordinator)
+        _viewModel = State(wrappedValue: vm)
     }
 
     var body: some View {
         NavigationStack(path: $coordinator.path) {
-            BookmarksView(coordinator: coordinator)
+            BookmarksView(viewModel: viewModel)
                 .navigationDestination(for: BookmarksRoute.self) { route in
                     switch route {
                     case .movieDetail(let id):

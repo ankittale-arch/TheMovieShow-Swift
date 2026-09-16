@@ -2,6 +2,7 @@ import SwiftUI
 
 struct HomeView: View {
     let viewModel: HomeViewModel
+    @Environment(\.scenePhase) private var scenePhase
 
     var body: some View {
         Group {
@@ -13,16 +14,24 @@ struct HomeView: View {
                 }
             } else {
                 contentScrollView
+                    .transition(.opacity)
             }
         }
+        .animation(.easeIn(duration: 0.25), value: viewModel.featuredMovies.isEmpty)
         .navigationTitle("The Movie Show")
         .navigationBarTitleDisplayMode(.large)
         .task { await viewModel.loadAll() }
+        .onChange(of: scenePhase) { _, newPhase in
+            if newPhase == .active {
+                Task { await viewModel.refreshIfStale() }
+            }
+        }
     }
 
     private var contentScrollView: some View {
         ScrollView(showsIndicators: false) {
             VStack(alignment: .leading, spacing: Spacing.large) {
+
                 if !viewModel.featuredMovies.isEmpty {
                     FeaturedBannerCarousel(
                         movies: viewModel.featuredMovies,
@@ -63,6 +72,7 @@ struct HomeView: View {
             }
             .padding(.bottom, Spacing.xxLarge)
         }
+        .refreshable { await viewModel.loadAll() }
     }
 }
 
@@ -192,6 +202,7 @@ private struct HorizontalMovieSection: View {
                     }
                     .foregroundStyle(Color.accentColor)
                 }
+                .accessibilityLabel("See all \(title) movies")
             }
             .padding(.horizontal, Spacing.medium)
 
@@ -228,6 +239,9 @@ private struct SectionPosterCard: View {
                 .padding(Spacing.xxSmall)
         }
         .frame(width: cardWidth, height: cardHeight)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("\(movie.title), rated \(String(format: "%.1f", movie.rating)) out of 10")
+        .accessibilityAddTraits(.isButton)
     }
 }
 
