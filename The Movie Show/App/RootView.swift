@@ -1,9 +1,8 @@
 import SwiftUI
 
-/// The root view of the application — renders the tab bar and delegates
-/// each tab's NavigationStack to its own coordinator view.
 struct RootView: View {
     @State private var coordinator: AppCoordinator
+    @Environment(NetworkMonitor.self) private var networkMonitor
 
     init(coordinator: AppCoordinator) {
         _coordinator = State(wrappedValue: coordinator)
@@ -19,6 +18,13 @@ struct RootView: View {
                     .tag(tab)
             }
         }
+        .safeAreaInset(edge: .top, spacing: 0) {
+            if !networkMonitor.isConnected {
+                OfflineBanner()
+                    .transition(.move(edge: .top).combined(with: .opacity))
+            }
+        }
+        .animation(.easeInOut(duration: 0.3), value: networkMonitor.isConnected)
     }
 
     @ViewBuilder
@@ -36,6 +42,25 @@ struct RootView: View {
     }
 }
 
+// MARK: - Offline Banner
+
+private struct OfflineBanner: View {
+    var body: some View {
+        HStack(spacing: Spacing.xSmall) {
+            Image(systemName: "wifi.slash")
+                .font(.caption.bold())
+            Text("You're offline — showing cached content")
+                .font(.caption.bold())
+            Spacer()
+        }
+        .foregroundStyle(.white)
+        .padding(.vertical, Spacing.xSmall)
+        .padding(.horizontal, Spacing.medium)
+        .background(Color.App.warning.opacity(0.92))
+    }
+}
+
 #Preview {
     RootView(coordinator: DependencyContainer.makeAppCoordinator())
+        .environment(NetworkMonitor())
 }
