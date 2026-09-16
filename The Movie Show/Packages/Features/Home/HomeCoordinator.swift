@@ -1,14 +1,15 @@
 import SwiftUI
 
-/// Routes owned by the Home feature flow.
 enum HomeRoute: AppRoute {
     case movieDetail(movieId: Int)
-    case movieList(category: String)
+    case movieList(category: MovieCategory)
+    case genreMovies(genreId: Int, genreName: String)
 }
 
 @MainActor
 protocol HomeCoordinatorProtocol: MovieDetailCoordinatorProtocol {
-    func showMovieList(category: String)
+    func showMovieList(category: MovieCategory)
+    func showGenreMovies(genreId: Int, genreName: String)
 }
 
 @Observable
@@ -34,8 +35,12 @@ final class HomeCoordinator: HomeCoordinatorProtocol {
         path.append(HomeRoute.movieDetail(movieId: movieId))
     }
 
-    func showMovieList(category: String) {
+    func showMovieList(category: MovieCategory) {
         path.append(HomeRoute.movieList(category: category))
+    }
+
+    func showGenreMovies(genreId: Int, genreName: String) {
+        path.append(HomeRoute.genreMovies(genreId: genreId, genreName: genreName))
     }
 
     func navigateBack() {
@@ -74,9 +79,20 @@ struct HomeCoordinatorView: View {
                             bookmarkRepository: coordinator.bookmarkRepository,
                             recentlyViewedRepository: coordinator.recentlyViewedRepository
                         ))
+
                     case .movieList(let category):
-                        Text("Movie List — \(category)")
-                            .navigationTitle(category)
+                        MovieListView(viewModel: MovieListViewModel(
+                            source: .category(category),
+                            coordinator: coordinator,
+                            movieRepository: coordinator.movieRepository
+                        ))
+
+                    case .genreMovies(let id, let name):
+                        MovieListView(viewModel: MovieListViewModel(
+                            source: .genre(id: id, name: name),
+                            coordinator: coordinator,
+                            movieRepository: coordinator.movieRepository
+                        ))
                     }
                 }
         }
