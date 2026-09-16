@@ -5,14 +5,26 @@ enum BookmarksRoute: AppRoute {
 }
 
 @MainActor
-protocol BookmarksCoordinatorProtocol: CoordinatorProtocol {
-    func showMovieDetail(movieId: Int)
-}
+protocol BookmarksCoordinatorProtocol: MovieDetailCoordinatorProtocol {}
 
 @Observable
 @MainActor
 final class BookmarksCoordinator: BookmarksCoordinatorProtocol {
     var path = NavigationPath()
+
+    let movieRepository: any MovieRepositoryProtocol
+    let bookmarkRepository: any BookmarkRepositoryProtocol
+    let recentlyViewedRepository: any RecentlyViewedRepositoryProtocol
+
+    init(
+        movieRepository: some MovieRepositoryProtocol,
+        bookmarkRepository: some BookmarkRepositoryProtocol,
+        recentlyViewedRepository: some RecentlyViewedRepositoryProtocol
+    ) {
+        self.movieRepository = movieRepository
+        self.bookmarkRepository = bookmarkRepository
+        self.recentlyViewedRepository = recentlyViewedRepository
+    }
 
     func showMovieDetail(movieId: Int) {
         path.append(BookmarksRoute.movieDetail(movieId: movieId))
@@ -41,8 +53,13 @@ struct BookmarksCoordinatorView: View {
                 .navigationDestination(for: BookmarksRoute.self) { route in
                     switch route {
                     case .movieDetail(let id):
-                        Text("Movie Detail — id: \(id)")
-                            .navigationTitle("Detail")
+                        MovieDetailView(viewModel: MovieDetailViewModel(
+                            movieId: id,
+                            coordinator: coordinator,
+                            movieRepository: coordinator.movieRepository,
+                            bookmarkRepository: coordinator.bookmarkRepository,
+                            recentlyViewedRepository: coordinator.recentlyViewedRepository
+                        ))
                     }
                 }
         }

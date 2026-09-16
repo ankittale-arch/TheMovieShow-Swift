@@ -17,6 +17,10 @@ struct BookmarksView: View {
 
 #Preview {
     NavigationStack {
-        BookmarksView(coordinator: BookmarksCoordinator())
+        BookmarksView(coordinator: BookmarksCoordinator(
+            movieRepository: PreviewMovieRepository(),
+            bookmarkRepository: PreviewBookmarkRepository(),
+            recentlyViewedRepository: PreviewRecentlyViewedRepository()
+        ))
     }
 }

@@ -17,6 +17,10 @@ struct RecentlyViewedView: View {
 
 #Preview {
     NavigationStack {
-        RecentlyViewedView(coordinator: RecentlyViewedCoordinator())
+        RecentlyViewedView(coordinator: RecentlyViewedCoordinator(
+            movieRepository: PreviewMovieRepository(),
+            bookmarkRepository: PreviewBookmarkRepository(),
+            recentlyViewedRepository: PreviewRecentlyViewedRepository()
+        ))
     }
 }

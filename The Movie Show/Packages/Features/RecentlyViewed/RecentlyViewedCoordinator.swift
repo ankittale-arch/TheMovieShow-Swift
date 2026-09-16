@@ -5,14 +5,26 @@ enum RecentlyViewedRoute: AppRoute {
 }
 
 @MainActor
-protocol RecentlyViewedCoordinatorProtocol: CoordinatorProtocol {
-    func showMovieDetail(movieId: Int)
-}
+protocol RecentlyViewedCoordinatorProtocol: MovieDetailCoordinatorProtocol {}
 
 @Observable
 @MainActor
 final class RecentlyViewedCoordinator: RecentlyViewedCoordinatorProtocol {
     var path = NavigationPath()
+
+    let movieRepository: any MovieRepositoryProtocol
+    let bookmarkRepository: any BookmarkRepositoryProtocol
+    let recentlyViewedRepository: any RecentlyViewedRepositoryProtocol
+
+    init(
+        movieRepository: some MovieRepositoryProtocol,
+        bookmarkRepository: some BookmarkRepositoryProtocol,
+        recentlyViewedRepository: some RecentlyViewedRepositoryProtocol
+    ) {
+        self.movieRepository = movieRepository
+        self.bookmarkRepository = bookmarkRepository
+        self.recentlyViewedRepository = recentlyViewedRepository
+    }
 
     func showMovieDetail(movieId: Int) {
         path.append(RecentlyViewedRoute.movieDetail(movieId: movieId))
@@ -41,8 +53,13 @@ struct RecentlyViewedCoordinatorView: View {
                 .navigationDestination(for: RecentlyViewedRoute.self) { route in
                     switch route {
                     case .movieDetail(let id):
-                        Text("Movie Detail — id: \(id)")
-                            .navigationTitle("Detail")
+                        MovieDetailView(viewModel: MovieDetailViewModel(
+                            movieId: id,
+                            coordinator: coordinator,
+                            movieRepository: coordinator.movieRepository,
+                            bookmarkRepository: coordinator.bookmarkRepository,
+                            recentlyViewedRepository: coordinator.recentlyViewedRepository
+                        ))
                     }
                 }
         }

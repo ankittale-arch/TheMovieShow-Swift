@@ -6,12 +6,8 @@ enum HomeRoute: AppRoute {
     case movieList(category: String)
 }
 
-/// Owns the NavigationPath for the Home tab and builds destination screens.
-/// Child coordinators / ViewModels call this via `HomeCoordinatorProtocol`
-/// so they never import concrete coordinator types.
 @MainActor
-protocol HomeCoordinatorProtocol: CoordinatorProtocol {
-    func showMovieDetail(movieId: Int)
+protocol HomeCoordinatorProtocol: MovieDetailCoordinatorProtocol {
     func showMovieList(category: String)
 }
 
@@ -19,6 +15,20 @@ protocol HomeCoordinatorProtocol: CoordinatorProtocol {
 @MainActor
 final class HomeCoordinator: HomeCoordinatorProtocol {
     var path = NavigationPath()
+
+    let movieRepository: any MovieRepositoryProtocol
+    let bookmarkRepository: any BookmarkRepositoryProtocol
+    let recentlyViewedRepository: any RecentlyViewedRepositoryProtocol
+
+    init(
+        movieRepository: some MovieRepositoryProtocol,
+        bookmarkRepository: some BookmarkRepositoryProtocol,
+        recentlyViewedRepository: some RecentlyViewedRepositoryProtocol
+    ) {
+        self.movieRepository = movieRepository
+        self.bookmarkRepository = bookmarkRepository
+        self.recentlyViewedRepository = recentlyViewedRepository
+    }
 
     func showMovieDetail(movieId: Int) {
         path.append(HomeRoute.movieDetail(movieId: movieId))
@@ -38,25 +48,33 @@ final class HomeCoordinator: HomeCoordinatorProtocol {
     }
 }
 
-/// Hosts the NavigationStack for the Home tab and wires route destinations.
 struct HomeCoordinatorView: View {
     @State var coordinator: HomeCoordinator
+    @State private var viewModel: HomeViewModel
 
     init(coordinator: HomeCoordinator) {
+        let vm = HomeViewModel(
+            coordinator: coordinator,
+            movieRepository: coordinator.movieRepository
+        )
         _coordinator = State(wrappedValue: coordinator)
+        _viewModel = State(wrappedValue: vm)
     }
 
     var body: some View {
         NavigationStack(path: $coordinator.path) {
-            HomeView(coordinator: coordinator)
+            HomeView(viewModel: viewModel)
                 .navigationDestination(for: HomeRoute.self) { route in
                     switch route {
                     case .movieDetail(let id):
-                        // Wired in Phase 5
-                        Text("Movie Detail — id: \(id)")
-                            .navigationTitle("Detail")
+                        MovieDetailView(viewModel: MovieDetailViewModel(
+                            movieId: id,
+                            coordinator: coordinator,
+                            movieRepository: coordinator.movieRepository,
+                            bookmarkRepository: coordinator.bookmarkRepository,
+                            recentlyViewedRepository: coordinator.recentlyViewedRepository
+                        ))
                     case .movieList(let category):
-                        // Wired in Phase 6
                         Text("Movie List — \(category)")
                             .navigationTitle(category)
                     }

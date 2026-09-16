@@ -15,3 +15,12 @@ protocol CoordinatorProtocol: AnyObject {
 /// Marker protocol applied to all route enums so NavigationStack destinations
 /// can be constrained to project-defined types only.
 protocol AppRoute: Hashable {}
+
+/// Navigation contract required by `MovieDetailViewModel`.
+/// Extends `CoordinatorProtocol` so it inherits `navigateBack()`.
+/// All four feature coordinator protocols extend this, meaning their
+/// concrete coordinator classes automatically satisfy it.
+@MainActor
+protocol MovieDetailCoordinatorProtocol: CoordinatorProtocol {
+    func showMovieDetail(movieId: Int)
+}
