@@ -78,7 +78,7 @@
       <EnvironmentVariables>
          <EnvironmentVariable
             key = "TMDB_ACCESS_TOKEN"
-            value = "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI4NjYxMjg0YjI3YjkxMzdhYjlmN2MzYzRiMGQwMjllOSIsIm5iZiI6MTc4OTU0ODI2NC4xMTY5OTk5LCJzdWIiOiI2YWFhNTZlOGM3N2YwMjRhOWNlOTUzOWEiLCJzY29wZXMiOlsiYXBpX3JlYWQiXSwidmVyc2lvbiI6MX0.XXCoj_XH3AiSKJ-FQxfIyk4R0q8skEmLnm0fVg8o_1c"
+            value = ""
             isEnabled = "YES">
          </EnvironmentVariable>
       </EnvironmentVariables>
