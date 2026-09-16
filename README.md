@@ -8,11 +8,11 @@ A full-featured iOS movie browser app built with SwiftUI and TMDB API, following
 
 | Home | Movie Detail | Search |
 |------|-------------|--------|
-| Featured banner carousel, genre chips, horizontal category sections | Backdrop, cast, trailer link, similar movies, bookmark | Debounced search with paginated results |
+| ![Home](Screenshots/home.png) | ![Detail](Screenshots/detail.png) | ![Search](Screenshots/search.png) |
 
 | Bookmarks | Recently Viewed | Genre / Category List |
 |-----------|----------------|----------------------|
-| Swipe-to-delete, poster + metadata rows | History list with clear-all confirmation | Infinite-scroll grid, pull-to-refresh |
+| ![Bookmarks](Screenshots/bookmark.png) | ![Recently Viewed](Screenshots/recently_viewed.png) | ![Genre](Screenshots/genre.png) |
 
 ---
 
