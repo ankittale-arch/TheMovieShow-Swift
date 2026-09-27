@@ -18,6 +18,7 @@ struct RootView: View {
                     .tag(tab)
             }
         }
+        .tabBarMinimizeBehavior(.onScrollDown)
         .safeAreaInset(edge: .top, spacing: 0) {
             if !networkMonitor.isConnected {
                 OfflineBanner()
